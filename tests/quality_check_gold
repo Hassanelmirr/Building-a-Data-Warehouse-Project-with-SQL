@@ -1,0 +1,62 @@
+
+----------------------------------------------------------------------------------------------
+
+
+-- Checking for any duplicate for customer
+
+SELECT cst_id, COUNT(*)  
+FROM
+	(SELECT
+		cs.cst_id,
+		cs.cst_key,
+		cs.cst_firstname,
+		cs.cst_lastname,
+		cs.cst_material_status,
+		cs.cst_gndr,
+		cs.cst_create_date,
+		ca.bdate,
+		ca.gen,
+		loc.cntry
+	FROM silver.crm_cust_info cs
+	LEFT JOIN silver.erp_cust_az12 ca
+	ON    cs.cst_key = ca.cid
+	LEFT JOIN silver.erp_loc_a101 loc
+	ON		cs.cst_key = loc.cid
+	)t GROUP BY cst_id
+	HAVING COUNT(*) > 1
+
+SELECT * FROM silver.erp_cust_az12
+
+SELECT DISTINCT
+	CASE WHEN 
+		cst_gndr != 'N/A' THEN cst_gndr
+		WHEN cst_gndr IS NULL OR gen IS NULL THEN 'N/A'
+		ELSE gen
+	END new_gen
+FROM silver.crm_cust_info cs
+LEFT JOIN silver.erp_cust_az12 ca
+ON cs.cst_key = ca.cid
+
+
+
+-- checking for any duplicates for products
+
+SELECT prd_id, COUNT(*)  
+FROM
+	(SELECT
+	crm.prd_id,
+	crm.prd_key,
+	crm.cat_id,
+	crm.prd_nm,
+	crm.prd_cost,
+	crm.prd_line,
+	crm.prd_start_dt,
+	erp.maintenance,
+	erp.cat,
+	erp.subcat
+FROM silver.crm_prd_info crm
+LEFT JOIN silver.erp_px_cat_g1v2 erp
+ON crm.cat_id = erp.id
+WHERE prd_end_dt IS NULL
+)t GROUP BY prd_id
+HAVING COUNT(*) > 1
