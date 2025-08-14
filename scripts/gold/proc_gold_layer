@@ -1,4 +1,5 @@
 
+
 CREATE VIEW gold.dim_customers AS
 SELECT 
 	ROW_NUMBER() OVER( ORDER BY cst_id) AS customer_key,
@@ -22,8 +23,8 @@ ON		cs.cst_key = loc.cid
 WHERE cs.cst_id IS NOT NULL
 
 
-SELECT * FROM silver.crm_cust_info
-WHERE cst_key = 'SF566'
+SELECT * FROM gold.dim_customers
+
 
 
 ----- gold dimension : poduct
@@ -35,23 +36,21 @@ CREATE VIEW gold.dim_product AS
 SELECT 
 	ROW_NUMBER() OVER( ORDER BY prd_id) AS product_key,
 	crm.prd_id AS product_id,
-	crm.prd_key AS product_key,
-	crm.cat_id AS category_id,
+	crm.prd_key AS product_number,
 	crm.prd_nm AS product_name,
-	crm.prd_cost AS cost,
-	crm.prd_line AS product_line,
-	erp.maintenance,
+	crm.cat_id AS category_id,
 	erp.cat AS category,
 	erp.subcat AS subcategory,
+	erp.maintenance,
+	crm.prd_cost AS cost,
+	crm.prd_line AS product_line,
 	crm.prd_start_dt AS product_start_date
 FROM silver.crm_prd_info crm
 LEFT JOIN silver.erp_px_cat_g1v2 erp
 ON crm.cat_id = erp.id
-LEFT JOIN silver.crm_sales_details sls
-ON crm.prd_key = sls.sls_prd_key
 WHERE prd_end_dt IS NULL
 
-
+SELECT * FROM gold.dim_product
 
 ----- gold fact : sales
 -- it is cummon between both dimensions : so it's fact 
@@ -59,6 +58,7 @@ WHERE prd_end_dt IS NULL
 SELECT * FROM silver.crm_sales_details
 SELECT * FROM silver.crm_prd_info
 SELECT * FROM silver.erp_px_cat_g1v2
+
 
 CREATE VIEW gold.fact_sales AS 
 SELECT 
@@ -73,6 +73,9 @@ SELECT
 	sd.sls_price AS price
 FROM silver.crm_sales_details sd
 LEFT JOIN gold.dim_product pr
-ON sd.sls_prd_key = pr.product_key
+ON sd.sls_prd_key = pr.product_number
 LEFT JOIN gold.dim_customers cu
 ON sd.sls_cust_id = cu.customer_id
+
+
+SELECT * from gold.fact_sales
