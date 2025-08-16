@@ -103,3 +103,5 @@ CREATE OR ALTER PROCEDURE bronze.load_bronze AS begin
 		PRINT '========================================';
 	END CATCH
 END
+
+EXEC bronze.load_bronze
