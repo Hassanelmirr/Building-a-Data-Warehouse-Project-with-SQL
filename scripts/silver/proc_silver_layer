@@ -15,7 +15,6 @@ EXEC load.silver_layer
 */
 
 
-
 CREATE OR ALTER PROCEDURE silver.load_silver AS
 BEGIN
 	BEGIN TRY
@@ -104,8 +103,8 @@ BEGIN
 		INSERT INTO silver.crm_sales_details(
 			sls_ord_num,
 			sls_prd_key,
-			sls_order_dt,
 			sls_cust_id,
+			sls_order_dt,
 			sls_ship_dt,
 			sls_due_dt,
 			sls_sales,
@@ -212,3 +211,4 @@ BEGIN
 		PRINT '======================================'
 	END CATCH
 END
+
