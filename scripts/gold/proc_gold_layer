@@ -64,8 +64,8 @@ CREATE VIEW gold.fact_sales AS
 SELECT 
 	sd.sls_ord_num AS order_number,
 	sd.sls_prd_key AS product_key,
-	sd.sls_order_dt AS order_date,
 	sd.sls_cust_id AS customer_id,
+	sd.sls_order_dt AS order_date,
 	sd.sls_ship_dt AS ship_date,
 	sd.sls_due_dt AS due_date,
 	sd.sls_sales AS total_sales,
@@ -76,6 +76,7 @@ LEFT JOIN gold.dim_product pr
 ON sd.sls_prd_key = pr.product_number
 LEFT JOIN gold.dim_customers cu
 ON sd.sls_cust_id = cu.customer_id
+
 
 
 SELECT * from gold.fact_sales
