@@ -1,0 +1,113 @@
+-- Create a new database
+
+USE MASTER;
+GO
+
+-- Drop & Recreate the database
+
+IF EXISTS (SELECT 1 FROM sys.databases WHERE name = 'DataWareHouseAnalytics')
+BEGIN
+	ALTER DATABASE DataWareHouseAnalytics SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
+	DROP DATABASE DataWareHouseAnalytics;
+END;
+GO
+
+
+
+-- Create the "datawarehouse" dataset
+
+CREATE DATABASE DataWareHouseAnalytics;
+GO
+
+USE DataWareHouseAnalytics
+GO
+
+
+-- creating SCHEMA
+
+CREATE SCHEMA gold
+GO 
+
+------
+-- CREAT & INSERT GOLD TABLES FROM DataWarehouse view layer
+
+
+--
+
+IF OBJECT_ID ('gold.dim_customers', 'U') IS NOT NULL
+	DROP TABLE gold.dim_customers
+GO
+
+CREATE TABLE gold.dim_customers(
+	customer_key INT,
+	customer_id INT,
+	customer_number NVARCHAR(50),
+	first_name NVARCHAR(50),
+	last_name NVARCHAR(50),
+	gendar NVARCHAR(50),
+	country NVARCHAR(50),
+	material_status NVARCHAR(50),
+	birth_date NVARCHAR(50),
+	create_date NVARCHAR(50)
+);
+
+TRUNCATE TABLE gold.dim_customers
+
+INSERT INTO gold.dim_customers
+SELECT * 
+FROM DataWarehouse.gold.dim_customers;
+
+
+--
+
+IF OBJECT_ID ('gold.dim_product', 'U') IS NOT NULL
+	DROP TABLE gold.dim_product
+GO
+
+CREATE TABLE gold.dim_product(
+	product_key INT ,
+	product_id INT,
+	product_number NVARCHAR(50),
+	product_name NVARCHAR(50),
+	category_id NVARCHAR(50),
+	category NVARCHAR(50),
+	subcategory NVARCHAR(50), 
+	maintenance NVARCHAR(50),
+	cost INT ,
+	product_line NVARCHAR(50),
+	product_start_date DATETIME
+);
+
+TRUNCATE TABLE gold.dim_product
+
+INSERT INTO gold.dim_product
+SELECT *
+FROM DataWarehouse.gold.dim_product;
+
+
+--
+
+IF OBJECT_ID ('gold.fact_sales', 'U') IS NOT NULL
+	DROP TABLE gold.fact_sales
+
+CREATE TABLE gold.fact_sales(
+	order_number NVARCHAR(50),
+	product_key NVARCHAR(50),
+	customer_id INT,
+	order_date DATE,
+	ship_date DATE,
+	due_date DATE,
+	total_sales INT,
+	quantity INT,
+	price INT
+);
+
+
+TRUNCATE TABLE gold.fact_sales
+
+INSERT INTO gold.fact_sales
+SELECT * 
+FROM DataWarehouse.gold.fact_sales;
+
+SELECT * FROM gold.fact_sales
+
