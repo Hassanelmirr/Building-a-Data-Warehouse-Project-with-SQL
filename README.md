@@ -64,5 +64,4 @@ The workflow covers everything from **raw data ingestion** to **advanced analyti
 - Built a strong foundation for **business intelligence (BI) dashboards**  
 
 ---
-
-👉 This project shows the **end-to-end data pipeline**: from raw data ingestion to **analytics-ready datasets**.
+ This project shows the **end-to-end data pipeline**: from raw data ingestion to **analytics-ready datasets**.
